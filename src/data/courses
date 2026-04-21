@@ -1,0 +1,131 @@
+// // Course categories data
+// export const courseCategories = [
+//   {
+//     id: 1,
+//     type: "NEET COURSES",
+//     description: "An extensive range of courses designed for NEET preparation, including two-year and crash courses.",
+//     courses: [
+//       { id: 1, name: "11th Medical for NEET - 2 Year Course", description: "An intensive 2-year program for 11th-grade students focusing on NEET." },
+//       { id: 2, name: "12th Medical for NEET", description: "A comprehensive course for 12th-grade students preparing for NEET." },
+//       { id: 3, name: "Dropper Batch (120-DAYS) - for NEET-2025", description: "A 120-day intensive program for dropper students aiming for NEET-2025." },
+//       { id: 4, name: "REPEATER / DROPPER COURSE for NEET-2025", description: "Focused preparation for NEET-2025 with additional mock tests and coaching." },
+//       { id: 5, name: "Test Series cum +1 Revision (for +2 appearing)", description: "Mock test series with revision for class 12 students." },
+//       { id: 6, name: "CRASH COURSE for NEET-2024 (for +2 appearing / Passed)", description: "A short-term crash course for immediate NEET-2024 preparation." },
+//     ],
+//   },
+//   {
+//     id: 2,
+//     type: "JEE COURSES",
+//     description: "Courses focused on JEE (Main & Advanced), from 11th-grade to repeater batches, offering intensive preparation.",
+//     courses: [
+//       { id: 1, name: "11th Non-medical for JEE (Main & Advanced) - 2 Year Course", description: "Comprehensive 2-year course for 11th-grade students targeting JEE." },
+//       { id: 2, name: "12th Non-Medical for JEE (Main & Advanced)", description: "A complete program for 12th-grade students focused on JEE." },
+//       { id: 3, name: "REPEATER / DROPPER COURSE for JEE (Main & Advanced)", description: "Intensive preparation for repeaters and droppers aiming for JEE." },
+//       { id: 4, name: "TEST SERIES - for JEE (Main & Advanced)", description: "Mock tests designed for JEE (Main & Advanced) preparation." },
+//     ],
+//   },
+//   {
+//     id: 3,
+//     type: "FOUNDATION COURSES",
+//     description: "Foundation courses designed to help students in class 9th and 10th to lay a strong academic base for competitive exams.",
+//     courses: [
+//       { id: 1, name: "9th Class Two Year Foundation Course", description: "A 2-year foundation course designed to prepare students for competitive exams." },
+//       { id: 2, name: "10th Class One Year Foundation Course", description: "One-year foundation course for class 10 students aiming for competitive exams." },
+//     ],
+//   },
+// ];
+export const courseCategories = [
+  {
+    id: 1,
+    type: "NEET COURSES",
+    description: "An extensive range of courses designed for NEET preparation...",
+    courses: [
+      {
+        id: 1,
+        name: "11th Medical for NEET - 2 Year Course",
+        description: "An intensive 2-year program for 11th-grade students focusing on NEET.",
+        instructor: "Dr. A. Sharma",
+        lessons: 30,
+        students: 120,
+        duration: "2 Years",
+        price: "₹85,000",
+        hoverDescription: "Comprehensive two-year NEET foundation with mentoring & tests.",
+        image: "https://via.placeholder.com/600x400?text=NEET+11th"
+      },
+      {
+        id: 2,
+        name: "12th Medical for NEET",
+        description: "A comprehensive course for 12th-grade students preparing for NEET.",
+        instructor: "Dr. R. Mehta",
+        lessons: 28,
+        students: 100,
+        duration: "1 Year",
+        price: "₹75,000",
+        hoverDescription: "Year-long NEET prep with focus on class 12 curriculum.",
+        image: "https://via.placeholder.com/600x400?text=NEET+12th"
+      }
+    ]
+  },
+  {
+    id: 2,
+    type: "JEE COURSES",
+    description: "Comprehensive JEE preparation courses for aspiring engineers...",
+    courses: [
+      {
+        id: 3,
+        name: "11th PCM for JEE - 2 Year Course",
+        description: "Targeted course for students entering 11th grade preparing for JEE.",
+        instructor: "Prof. S. Verma",
+        lessons: 32,
+        students: 150,
+        duration: "2 Years",
+        price: "₹90,000",
+        hoverDescription: "Two-year PCM coaching with test series & doubt sessions.",
+        image: "https://via.placeholder.com/600x400?text=JEE+11th"
+      },
+      {
+        id: 4,
+        name: "12th PCM for JEE",
+        description: "A focused program for 12th-grade students appearing for JEE.",
+        instructor: "Prof. K. Iyer",
+        lessons: 26,
+        students: 95,
+        duration: "1 Year",
+        price: "₹80,000",
+        hoverDescription: "One-year intensive for class 12 board + JEE Main/Advanced.",
+        image: "https://via.placeholder.com/600x400?text=JEE+12th"
+      }
+    ]
+  },
+  {
+    id: 3,
+    type: "FOUNDATION COURSES",
+    description: "Early preparation courses for 8th to 10th students building concepts...",
+    courses: [
+      {
+        id: 5,
+        name: "Foundation Course for Class 8",
+        description: "Designed to build fundamental concepts in Science & Math.",
+        instructor: "Ms. T. Arora",
+        lessons: 20,
+        students: 80,
+        duration: "1 Year",
+        price: "₹45,000",
+        hoverDescription: "Class 8 foundation with Olympiad-level training.",
+        image: "https://via.placeholder.com/600x400?text=Foundation+8"
+      },
+      {
+        id: 6,
+        name: "Foundation Course for Class 9 & 10",
+        description: "Strengthen your basics with early exposure to NEET/JEE pattern.",
+        instructor: "Mr. M. Singh",
+        lessons: 24,
+        students: 110,
+        duration: "2 Years",
+        price: "₹60,000",
+        hoverDescription: "2-year program blending school syllabus with advanced practice.",
+        image: "https://via.placeholder.com/600x400?text=Foundation+9+10"
+      }
+    ]
+  }
+];
