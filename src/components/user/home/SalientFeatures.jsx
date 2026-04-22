@@ -188,41 +188,55 @@
 
 // export default SalientFeatures;
 
-import React from "react";
-import SailentImage from "../../../assets/sailent.jpg";
+import React, { useState, useEffect } from "react";
+import BASE_URL from "../../../config/apiConfig";
 
 const SalientFeatures = () => {
-  const features = [
-    { title: "Regular Tests Analysis", image: SailentImage },
-    { title: "Video Features", image: SailentImage },
-    { title: "Live Classes", image: SailentImage },
-    { title: "Digital Study Material", image: SailentImage },
-    { title: "Home Assignments", image: SailentImage },
-    { title: "Doubt Resolving Sessions", image: SailentImage },
-  ];
+  const [features, setFeatures] = useState([]);
+
+  useEffect(() => {
+    const fetchFeatures = async () => {
+      try {
+        const response = await fetch(`${BASE_URL}/salient-feature`);
+        if (response.ok) {
+          const data = await response.json();
+          setFeatures(data);
+        }
+      } catch (error) {
+        console.error("Error fetching features:", error);
+      }
+    };
+    fetchFeatures();
+  }, []);
+
+  if (features.length === 0) return null;
 
   return (
-    <div className="w-full bg-white py-12 px-4">
+    <div className="w-full bg-[#fdfdfd] py-16 px-4 md:px-10 border-t border-gray-50">
       <div className="max-w-7xl mx-auto">
         {/* Title */}
-        <h2 className="text-3xl font-bold text-center text-gray-800 mb-10">
-          Salient Features of{" "}
-          <span className="text-blue-600">Digital Online Courses</span>
-        </h2>
+        <div className="text-center mb-16">
+          <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-4 tracking-tight uppercase">
+            Salient Features of <span className="text-teal-600">Digital Online Courses</span>
+          </h2>
+          <div className="w-24 h-1.5 bg-teal-600 mx-auto rounded-full"></div>
+        </div>
 
-        {/* Feature Boxes: perfect row, equal spacing */}
-        <div className="flex justify-center items-center gap-6 flex-wrap md:flex-nowrap">
-          {features.map((feature, index) => (
+        {/* Feature Boxes */}
+        <div className="flex justify-center items-stretch gap-4 md:gap-8 flex-wrap lg:flex-nowrap overflow-x-auto pb-4 scrollbar-hide">
+          {features.map((feature) => (
             <div
-              key={index}
-              className="w-[140px] h-[140px] bg-gray-100 rounded-lg shadow hover:shadow-md transition-all flex flex-col items-center justify-center px-3 text-center"
+              key={feature._id}
+              className="w-[160px] min-w-[150px] bg-white rounded-2xl border border-orange-100 shadow-sm hover:shadow-xl hover:shadow-orange-50 transition-all duration-500 flex flex-col items-center justify-center p-6 text-center group cursor-default"
             >
-              <img
-                src={feature.image}
-                alt={feature.title}
-                className="w-10 h-10 object-cover rounded-full mb-3"
-              />
-              <p className="text-sm font-semibold text-gray-700 leading-tight">
+              <div className="w-16 h-16 bg-orange-50 rounded-2xl flex items-center justify-center mb-5 group-hover:bg-orange-100 transition-colors duration-500">
+                <img
+                  src={feature.image}
+                  alt={feature.title}
+                  className="w-10 h-10 object-contain group-hover:scale-110 transition-transform duration-500"
+                />
+              </div>
+              <p className="text-sm font-extrabold text-gray-800 leading-snug uppercase tracking-tight h-10 flex items-center justify-center">
                 {feature.title}
               </p>
             </div>

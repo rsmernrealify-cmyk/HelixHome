@@ -161,7 +161,7 @@ function CategoryPage() {
       setLoading(true);
       try {
         const categoryName = CATEGORY_MAP[categoryId];
-        const response = await fetch(`${BASE_URL}/course?category=${categoryName}`);
+        const response = await fetch(`${BASE_URL}/course?categoryId=${categoryId}`);
         if (response.ok) {
           const data = await response.json();
           setCourses(data);

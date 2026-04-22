@@ -33,18 +33,12 @@ const AppRoutes = () => {
         <Route path="/jobs" element={<JobPage />} />
         <Route path="/contact-us" element={<ContactUsPage />} />
         <Route path="/category/:categoryId" element={<CategoryPage />} />
-        {/* <Route path="/course/:courseId/:categoryId" element={<CourseDetailsPage />} /> */}
-        <Route path="/course-details" element={<CourseDetailsPage />} />
+        <Route path="/course/:courseId/:categoryId" element={<CourseDetailsPage />} />
         <Route path="/pay-online" element={<PayOnlinePage />} />
         <Route path="/scholarship-test" element={<ScholarshipTestPage />} />
         <Route path="/download-syllabus" element={<DownloadSyllabus />} />
         <Route path="/pay-installment" element={<PayInstallment />} />
         <Route path="/neet-answer-key" element={<NeeTAnswerKeyPage />} />
-        {/* <Route path="/admin/login" element={<AdminLoginPage />} /> */}
-        {/* <Route path="/admin/*">
-          {<>{AdminRoutes}</>}
-        </Route> */}
-        <Route path="/" element={<AppRoutes />} />
         <Route path="/admin/*" element={<AdminRoutes />} />
       </Routes>
 

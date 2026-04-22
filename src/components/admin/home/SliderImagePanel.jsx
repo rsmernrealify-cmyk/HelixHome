@@ -1,76 +1,3 @@
-
-
-// import React, { useState } from "react";
-
-// const SliderImagePanel = () => {
-//   const [images, setImages] = useState([]);
-
-//   // Handle Image Upload
-//   const handleImageUpload = (e) => {
-//     const files = Array.from(e.target.files);
-//     const newImages = files.map((file, index) => ({
-//       file,
-//       name: file.name, // Store image name
-//       url: URL.createObjectURL(file),
-//     }));
-
-//     setImages([...images, ...newImages]);
-//     e.target.value = ""; // Reset input field to remove last selected file name
-//   };
-
-//   // Delete Image
-//   const handleDeleteImage = (index) => {
-//     const filteredImages = images.filter((_, i) => i !== index);
-//     setImages(filteredImages);
-//   };
-
-//   return (
-//     <div className="container mx-auto p-6">
-//       <h1 className="text-3xl font-bold mb-6">Manage Slider Images</h1>
-
-//       {/* Upload Section */}
-//       <div className="bg-white p-6 rounded-lg shadow-md">
-//         <h2 className="text-2xl font-semibold mb-4">Upload Images</h2>
-//         <input
-//           type="file"
-//           multiple
-//           onChange={handleImageUpload}
-//           className="mt-1 block w-full border border-gray-300 p-2 rounded-md"
-//         />
-//       </div>
-
-//       {/* Preview Slider */}
-//       {images.length > 0 && (
-//         <div className="mt-6">
-//           <h2 className="text-2xl font-semibold mb-4">Preview Slider</h2>
-//           <div className="relative w-full overflow-hidden">
-//             <div className="flex space-x-4 overflow-x-auto scrollbar-hide">
-//               {images.map((image, index) => (
-//                 <div key={index} className="relative w-64 h-48 flex-shrink-0 text-center">
-//                   <img
-//                     src={image.url}
-//                     alt={`Slide ${index}`}
-//                     className="w-full h-40 object-cover rounded-lg shadow-md"
-//                   />
-//                   <p className="mt-2 text-sm font-medium">{index + 1}. {image.name}</p>
-//                   <button
-//                     onClick={() => handleDeleteImage(index)}
-//                     className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600"
-//                   >
-//                     ✕
-//                   </button>
-//                 </div>
-//               ))}
-//             </div>
-//           </div>
-//         </div>
-//       )}
-//     </div>
-//   );
-// };
-
-// export default SliderImagePanel;
-
 import React, { useState, useEffect } from "react";
 import BASE_URL from "../../../config/apiConfig";
 
@@ -78,23 +5,68 @@ const SliderImagePanel = () => {
   const [sliders, setSliders] = useState([]);
   const [newSlider, setNewSlider] = useState({
     title: "",
-    description: "",
-    buttonText: "Apply Now",
-    link: "/",
     image: null
   });
   const [previewImage, setPreviewImage] = useState(null);
 
+  // Announcement State
+  const [announcements, setAnnouncements] = useState([]);
+  const [newAnnouncement, setNewAnnouncement] = useState({ text: "", link: "" });
+
   useEffect(() => {
     fetchSliders();
+    fetchAnnouncements();
   }, []);
+
+  const fetchAnnouncements = async () => {
+    try {
+      const response = await fetch(`${BASE_URL}/announcement`);
+      if (response.ok) {
+        const data = await response.json();
+        setAnnouncements(Array.isArray(data) ? data : []);
+      }
+    } catch (error) {
+      console.error("Error fetching announcements:", error);
+    }
+  };
+
+  const addAnnouncement = async () => {
+    if (!newAnnouncement.text) return alert("Text is required");
+    try {
+      const response = await fetch(`${BASE_URL}/announcement`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newAnnouncement),
+      });
+      if (response.ok) {
+        setNewAnnouncement({ text: "", link: "" });
+        fetchAnnouncements();
+      }
+    } catch (error) {
+      console.error("Error adding announcement:", error);
+    }
+  };
+
+  const deleteAnnouncement = async (id) => {
+    if (!window.confirm("Are you sure?")) return;
+    try {
+      const response = await fetch(`${BASE_URL}/announcement/${id}`, {
+        method: "DELETE",
+      });
+      if (response.ok) {
+        fetchAnnouncements();
+      }
+    } catch (error) {
+      console.error("Error deleting announcement:", error);
+    }
+  };
 
   const fetchSliders = async () => {
     try {
       const response = await fetch(`${BASE_URL}/slider`);
       if (response.ok) {
         const data = await response.json();
-        setSliders(data);
+        setSliders(Array.isArray(data) ? data : []);
       }
     } catch (error) {
       console.error("Error fetching sliders:", error);
@@ -122,9 +94,6 @@ const SliderImagePanel = () => {
 
     const formData = new FormData();
     formData.append("title", newSlider.title);
-    formData.append("description", newSlider.description || "");
-    formData.append("buttonText", newSlider.buttonText);
-    formData.append("link", newSlider.link);
     formData.append("image", newSlider.image);
 
     try {
@@ -135,7 +104,7 @@ const SliderImagePanel = () => {
 
       if (response.ok) {
         fetchSliders();
-        setNewSlider({ title: "", description: "", buttonText: "Apply Now", link: "/", image: null });
+        setNewSlider({ title: "", image: null });
         setPreviewImage(null);
       } else {
         alert("Error adding slider.");
@@ -162,56 +131,88 @@ const SliderImagePanel = () => {
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6 text-gray-800">Manage Hero Sliders</h1>
+      <h1 className="text-3xl font-bold mb-6 text-gray-800 uppercase tracking-tight">Manage Homepage Hero</h1>
 
-      {/* Add Section */}
-      <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100 mb-8">
-        <h2 className="text-xl font-semibold mb-6 text-gray-700">Add New Slide</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-4">
+      {/* Announcement Ticker Section */}
+      <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100 mb-8 relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-1 bg-teal-500"></div>
+        <h2 className="text-xl font-semibold mb-6 text-gray-700">
+          Manage Scrolling Announcements
+        </h2>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">New Ticker Text</label>
+                <input
+                    type="text"
+                    value={newAnnouncement.text}
+                    onChange={(e) => setNewAnnouncement({...newAnnouncement, text: e.target.value})}
+                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 outline-none transition-all"
+                    placeholder="e.g. Admission Open for 2024-25 Session!"
+                />
+            </div>
+            <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Redirection Link (Optional)</label>
+                <input
+                    type="text"
+                    value={newAnnouncement.link}
+                    onChange={(e) => setNewAnnouncement({...newAnnouncement, link: e.target.value})}
+                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 outline-none transition-all"
+                    placeholder="e.g. /scholarship-test"
+                />
+            </div>
+        </div>
+        <button
+          onClick={addAnnouncement}
+          className="bg-teal-600 text-white font-semibold py-2 px-8 rounded-lg hover:bg-teal-700 transition shadow-md"
+        >
+          Add to Ticker
+        </button>
+
+        <div className="mt-8">
+            <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">Active Tickers</h3>
+            <div className="space-y-3">
+                {Array.isArray(announcements) && announcements.length === 0 && (
+                  <p className="text-gray-400 text-sm italic">No announcements added yet.</p>
+                )}
+                {Array.isArray(announcements) && announcements.map((item) => (
+                    <div key={item._id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-100 group">
+                        <div className="flex-grow">
+                            <p className="font-medium text-gray-800">{item.text}</p>
+                            <p className="text-xs text-blue-500 truncate max-w-md">{item.link}</p>
+                        </div>
+                        <button
+                            onClick={() => deleteAnnouncement(item._id)}
+                            className="p-2 text-red-500 hover:bg-red-50 rounded-full transition opacity-0 group-hover:opacity-100"
+                        >
+                            ✕
+                        </button>
+                    </div>
+                ))}
+            </div>
+        </div>
+      </div>
+
+      {/* Add Slider Section */}
+      <div className="bg-white p-6 rounded-xl shadow-lg border border-gray-100 mb-8 relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-1 bg-blue-500"></div>
+        <h2 className="text-xl font-semibold mb-6 text-gray-700">Add Hero Slide Image</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Slide Title / Alt Text</label>
               <input
                 type="text"
                 name="title"
                 value={newSlider.title}
                 onChange={handleInputChange}
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                placeholder="Slide Title"
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                placeholder="e.g. NEET Preparation Slide"
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-              <textarea
-                name="description"
-                value={newSlider.description}
-                onChange={handleInputChange}
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                placeholder="Slide Description"
-                rows="2"
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Button Text</label>
-                <input
-                  type="text"
-                  name="buttonText"
-                  value={newSlider.buttonText}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Link</label>
-                <input
-                  type="text"
-                  name="link"
-                  value={newSlider.link}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                />
-              </div>
+            <div className="p-4 bg-blue-50 rounded-lg border border-blue-100 text-sm text-blue-700">
+               <p className="font-bold mb-1">Note:</p>
+               These images will appear at the top of your homepage hero section. 
             </div>
           </div>
           <div className="flex flex-col items-center justify-center border-2 border-dashed rounded-xl p-4">
@@ -240,32 +241,28 @@ const SliderImagePanel = () => {
         </button>
       </div>
 
-      {/* List Section */}
+      {/* List Sliders Section */}
       <div>
-        <h2 className="text-2xl font-bold mb-6 text-gray-800">Current Slides</h2>
+        <h2 className="text-2xl font-bold mb-6 text-gray-800">Current Hero Slides</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {sliders.map((slider) => (
+          {Array.isArray(sliders) && sliders.map((slider) => (
             <div key={slider._id} className="bg-white rounded-xl shadow-md overflow-hidden flex flex-col group">
-              <div className="relative h-48">
+              <div className="relative h-48 overflow-hidden">
                 <img
                   src={slider.image}
                   alt={slider.title}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transition-transform group-hover:scale-105"
                 />
                 <button
                   onClick={() => handleDeleteSlider(slider._id)}
-                  className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition"
+                  className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition shadow-lg"
                 >
                   ✕
                 </button>
               </div>
-              <div className="p-4 flex-grow">
+              <div className="p-4 flex-grow border-t">
                 <h3 className="font-bold text-lg text-gray-800">{slider.title}</h3>
-                <p className="text-gray-600 text-sm mt-1 line-clamp-2">{slider.description}</p>
-                <div className="mt-4 flex justify-between items-center text-xs font-medium text-blue-600">
-                  <span>Btn: {slider.buttonText}</span>
-                  <span>Path: {slider.link}</span>
-                </div>
+                <p className="text-xs text-gray-400 uppercase font-bold tracking-widest mt-1">Hero Slide</p>
               </div>
             </div>
           ))}

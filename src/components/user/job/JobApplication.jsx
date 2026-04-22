@@ -420,7 +420,7 @@ const JobApplication = () => {
     });
 
     try {
-      const response = await fetch("https://p6lh6946-3000.inc1.devtunnels.ms/teacher/apply", {
+      const response = await fetch("https://kzlhxr7v-3000.inc1.devtunnels.ms/teacher/apply", {
         method: "POST",
         body: formDataToSend,
       });

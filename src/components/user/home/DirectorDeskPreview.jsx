@@ -125,7 +125,7 @@ export default function DirectorDeskPreview() {
   if (!data) return null;
 
   return (
-    <div className="min-h-screen bg-white flex flex-col md:flex-row items-center justify-center px-4 py-8">
+    <div className="bg-white flex flex-col md:flex-row items-center justify-center px-4 py-16 lg:py-24">
       {/* Left visual/content block */}
       <div className="relative bg-white rounded-2xl shadow-lg p-4 md:p-8 flex flex-col items-center max-w-sm w-full md:w-[400px]">
         <img
@@ -155,7 +155,7 @@ export default function DirectorDeskPreview() {
         </div>
       </div>
       {/* Right TEXT block */}
-      <div className="flex flex-col justify-center w-full max-w-3xl md:pl-12 mt-20 md:mt-0">
+      <div className="flex flex-col justify-center w-full max-w-3xl md:pl-12 mt-16 md:mt-0">
         <span className="uppercase tracking-widest text-xs text-gray-500 font-medium mb-2">Director's Message</span>
         <h1 className="text-4xl font-extrabold text-gray-900 mb-4 leading-snug">
           {data.title}
@@ -164,18 +164,12 @@ export default function DirectorDeskPreview() {
           {data.content && data.content[0]}
         </p>
         <ul className="space-y-2 mb-8">
-          <li className="flex items-center gap-2 text-gray-900 font-medium">
-            <span className="text-yellow-400 font-bold">&#10003;</span>
-            Expert Faculty
-          </li>
-          <li className="flex items-center gap-2 text-gray-900 font-medium">
-            <span className="text-yellow-400 font-bold">&#10003;</span>
-            Personalized Mentorship
-          </li>
-          <li className="flex items-center gap-2 text-gray-900 font-medium">
-            <span className="text-yellow-400 font-bold">&#10003;</span>
-            Proven Track Record
-          </li>
+          {(data.features && data.features.length > 0 ? data.features : ["Expert Faculty", "Personalized Mentorship", "Proven Track Record"]).map((feature, idx) => (
+            <li key={idx} className="flex items-center gap-2 text-gray-900 font-medium">
+              <span className="text-yellow-400 font-bold">&#10003;</span>
+              {feature}
+            </li>
+          ))}
         </ul>
         <Link
           to="/director-desk"

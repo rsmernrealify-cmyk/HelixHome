@@ -26,7 +26,20 @@ const EditCoursesPanel = () => {
     duration: "",
     price: "",
     hoverDescription: "",
-    isPopular: false
+    isPopular: false,
+    eligible: "",
+    startDates: "",
+    mode: "",
+    admissionCriteria: "",
+    longDescription: "",
+    scholarshipDetails: "",
+    registrationStepsOnline: "",
+    registrationStepsOffline: "",
+    formLink: "",
+    intensity: "",
+    modulesCount: "",
+    popularityRanking: "",
+    noteForApplicants: ""
   });
   const [imageFile, setImageFile] = useState(null);
 
@@ -52,26 +65,62 @@ const EditCoursesPanel = () => {
   };
 
   const handleEditClick = (course) => {
+    console.log("Editing course object from API:", course); // CRITICAL DEBUG LOG
     setEditingCourse(course);
     setFormData({
-      name: course.name,
-      description: course.description,
+      name: course.name || "",
+      description: course.description || "",
       instructor: course.instructor || "",
       lessons: course.lessons || 0,
       students: course.students || 0,
       duration: course.duration || "",
       price: course.price || "",
       hoverDescription: course.hoverDescription || "",
-      isPopular: course.isPopular || false
+      isPopular: course.isPopular || false,
+      eligible: course.eligible || "",
+      startDates: course.startDates || "",
+      mode: course.mode || "",
+      admissionCriteria: course.admissionCriteria || "",
+      longDescription: course.longDescription || "",
+      scholarshipDetails: course.scholarshipDetails || "",
+      registrationStepsOnline: course.registrationStepsOnline || "",
+      registrationStepsOffline: course.registrationStepsOffline || "",
+      formLink: course.formLink || "",
+      intensity: course.intensity || "",
+      modulesCount: course.modulesCount || "",
+      popularityRanking: course.popularityRanking || "",
+      noteForApplicants: course.noteForApplicants || ""
     });
   };
 
   const handleSave = async (e) => {
     e.preventDefault();
     const data = new FormData();
-    Object.keys(formData).forEach(key => data.append(key, formData[key]));
+    
+    // Log what we are trying to save
+    console.log("Saving current formData state:", formData); 
+
+    // Explicitly append every field to ensure Multer parses them
+    const fieldsToAppend = [
+      'name', 'description', 'instructor', 'lessons', 'students', 'duration', 
+      'price', 'hoverDescription', 'isPopular', 'eligible', 'startDates', 
+      'mode', 'admissionCriteria', 'longDescription', 'scholarshipDetails', 
+      'registrationStepsOnline', 'registrationStepsOffline', 'formLink',
+      'intensity', 'modulesCount', 'popularityRanking', 'noteForApplicants'
+    ];
+
+    fieldsToAppend.forEach(key => {
+      // Use empty string as fallback to avoid 'undefined' string being sent
+      const value = formData[key] !== undefined && formData[key] !== null ? formData[key] : "";
+      data.append(key, value);
+    });
+
+    console.log(`Sending ${fieldsToAppend.length} fields to backend.`); // DIAGNOSTIC LOG
+    // alert(`Preparing to send ${fieldsToAppend.length} fields. Check console.`);
+    
     data.append("categoryId", selectedCategoryId);
     data.append("category", CATEGORIES.find(c => c.id === selectedCategoryId).type);
+    
     if (imageFile) data.append("image", imageFile);
 
     const url = editingCourse ? `${BASE_URL}/course/${editingCourse._id}` : `${BASE_URL}/course`;
@@ -87,6 +136,9 @@ const EditCoursesPanel = () => {
         alert(editingCourse ? "Course updated!" : "Course added!");
         fetchCourses();
         resetForm();
+      } else {
+        const errorData = await response.json();
+        alert(`Error: ${errorData.error || 'Failed to save'}`);
       }
     } catch (error) {
       console.error("Error saving course:", error);
@@ -115,7 +167,20 @@ const EditCoursesPanel = () => {
       duration: "",
       price: "",
       hoverDescription: "",
-      isPopular: false
+      isPopular: false,
+      eligible: "",
+      startDates: "",
+      mode: "",
+      admissionCriteria: "",
+      longDescription: "",
+      scholarshipDetails: "",
+      registrationStepsOnline: "",
+      registrationStepsOffline: "",
+      formLink: "",
+      intensity: "",
+      modulesCount: "",
+      popularityRanking: "",
+      noteForApplicants: ""
     });
     setImageFile(null);
   };
@@ -167,9 +232,19 @@ const EditCoursesPanel = () => {
           <form onSubmit={handleSave} className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 sticky top-6">
             <h2 className="text-xl font-bold mb-6 text-gray-800">{editingCourse ? "Edit Course" : "New Course"}</h2>
 
-            <div className="space-y-4">
+            <div className="space-y-4 overflow-y-auto max-h-[70vh] pr-2 custom-scrollbar">
               <input type="text" name="name" value={formData.name} onChange={handleInputChange} placeholder="Course Name" className="w-full px-4 py-2 border rounded-lg" required />
-              <textarea name="description" value={formData.description} onChange={handleInputChange} placeholder="Description" className="w-full px-4 py-2 border rounded-lg" rows="2" required />
+              
+              <div className="grid grid-cols-2 gap-4">
+                 <div>
+                    <label className="text-[10px] uppercase font-bold text-gray-400 ml-1">Short Description (for cards)</label>
+                    <textarea name="description" value={formData.description} onChange={handleInputChange} placeholder="Brief summary..." className="w-full px-4 py-2 border rounded-lg" rows="2" required />
+                 </div>
+                 <div>
+                    <label className="text-[10px] uppercase font-bold text-gray-400 ml-1">Hover Description</label>
+                    <input type="text" name="hoverDescription" value={formData.hoverDescription} onChange={handleInputChange} placeholder="Quick highlight..." className="w-full px-4 py-2 border rounded-lg h-full" />
+                 </div>
+              </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <input type="text" name="instructor" value={formData.instructor} onChange={handleInputChange} placeholder="Instructor" className="w-full px-4 py-2 border rounded-lg" />
@@ -177,25 +252,75 @@ const EditCoursesPanel = () => {
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <input type="text" name="price" value={formData.price} onChange={handleInputChange} placeholder="Price (e.g. ₹85,000)" className="w-full px-4 py-2 border rounded-lg" />
+                <input type="text" name="price" value={formData.price} onChange={handleInputChange} placeholder="Fees (e.g. ₹85,000)" className="w-full px-4 py-2 border rounded-lg" />
                 <input type="number" name="lessons" value={formData.lessons} onChange={handleInputChange} placeholder="Lessons Count" className="w-full px-4 py-2 border rounded-lg" />
               </div>
 
-              <input type="text" name="hoverDescription" value={formData.hoverDescription} onChange={handleInputChange} placeholder="Hover Description (Brief summary)" className="w-full px-4 py-2 border rounded-lg" />
+              <div className="grid grid-cols-2 gap-4">
+                <input type="text" name="eligible" value={formData.eligible} onChange={handleInputChange} placeholder="Eligibility (e.g. 10th Appeared)" className="w-full px-4 py-2 border rounded-lg" />
+                <input type="text" name="startDates" value={formData.startDates} onChange={handleInputChange} placeholder="Start Dates (e.g. 6 April)" className="w-full px-4 py-2 border rounded-lg" />
+              </div>
 
-              <div className="flex items-center gap-2">
-                <input type="checkbox" name="isPopular" checked={formData.isPopular} onChange={handleInputChange} id="isPopular" />
-                <label htmlFor="isPopular" className="text-sm text-gray-600">Show in Popular Courses</label>
+              <div className="bg-teal-50/30 p-4 rounded-xl border border-teal-100 flex flex-col gap-4">
+                 <p className="text-[10px] font-black text-teal-700 uppercase tracking-widest px-1">Quick Summary Stats (Sidebar)</p>
+                 <div className="grid grid-cols-3 gap-3">
+                    <input type="text" name="intensity" value={formData.intensity} onChange={handleInputChange} placeholder="Intensity (Full-Time)" className="px-3 py-2 border rounded-lg text-sm" />
+                    <input type="text" name="modulesCount" value={formData.modulesCount} onChange={handleInputChange} placeholder="Modules (36+)" className="px-3 py-2 border rounded-lg text-sm" />
+                    <input type="text" name="popularityRanking" value={formData.popularityRanking} onChange={handleInputChange} placeholder="Ranking (Top 1%)" className="px-3 py-2 border rounded-lg text-sm" />
+                 </div>
+              </div>
+
+              <input type="text" name="mode" value={formData.mode} onChange={handleInputChange} placeholder="Class Mode (e.g. Offline Classes)" className="w-full px-4 py-2 border rounded-lg" />
+
+              <div>
+                <label className="text-[10px] uppercase font-bold text-gray-400 ml-1">Detailed Course Description</label>
+                <textarea name="longDescription" value={formData.longDescription} onChange={handleInputChange} placeholder="Full curriculum details, schedules, etc." className="w-full px-4 py-2 border rounded-lg font-mono text-sm" rows="6" />
               </div>
 
               <div>
-                <label className="block text-xs text-gray-400 mb-1 caps">Course Image</label>
-                <input type="file" onChange={(e) => setImageFile(e.target.files[0])} className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100" />
+                <label className="text-[10px] uppercase font-bold text-gray-400 ml-1">Admission & Scholarship Criteria (Brief)</label>
+                <textarea name="admissionCriteria" value={formData.admissionCriteria} onChange={handleInputChange} placeholder="Minimum marks, test dates, concessions..." className="w-full px-4 py-2 border rounded-lg font-mono text-sm" rows="3" title="This is a brief summary of criteria shown at the top" />
               </div>
 
-              <div className="pt-4 flex gap-3">
-                <button type="submit" className="flex-1 bg-teal-600 text-white font-bold py-3 rounded-xl hover:bg-teal-700 shadow-lg transition">{editingCourse ? "Update Course" : "Save Course"}</button>
-                {editingCourse && <button type="button" onClick={resetForm} className="px-6 py-3 border rounded-xl hover:bg-gray-50 transition">Cancel</button>}
+              <div>
+                <label className="text-[10px] uppercase font-bold text-gray-400 ml-1">Scholarships or Discounts (Detailed Rules)</label>
+                <textarea name="scholarshipDetails" value={formData.scholarshipDetails} onChange={handleInputChange} placeholder="1. 10th class marks... 2. Concessions... etc." className="w-full px-4 py-2 border rounded-lg font-mono text-sm" rows="5" title="List detailed points and notes here" />
+              </div>
+
+              <div>
+                <label className="text-[10px] uppercase font-bold text-gray-400 ml-1">Scholarship Note for Applicants (The bottom quote)</label>
+                <textarea name="noteForApplicants" value={formData.noteForApplicants} onChange={handleInputChange} placeholder='"For scholarship entry, students must participate... etc."' className="w-full px-4 py-2 border rounded-lg italic text-sm" rows="3" />
+              </div>
+
+              <div className="bg-blue-50/30 p-4 rounded-xl border border-blue-100/50 space-y-4">
+                <p className="text-xs font-black text-blue-600 uppercase tracking-widest px-1">How to Register (Dynamic Steps)</p>
+                <div>
+                  <label className="text-[10px] uppercase font-bold text-gray-400 ml-1">Online Registration Steps</label>
+                  <textarea name="registrationStepsOnline" value={formData.registrationStepsOnline} onChange={handleInputChange} placeholder="⇨ Click on ENROL NOW... etc." className="w-full px-4 py-2 border rounded-lg font-mono text-sm" rows="4" />
+                </div>
+                <div>
+                  <label className="text-[10px] uppercase font-bold text-gray-400 ml-1">Offline Registration Steps</label>
+                  <textarea name="registrationStepsOffline" value={formData.registrationStepsOffline} onChange={handleInputChange} placeholder="⇨ Download and print application form... etc." className="w-full px-4 py-2 border rounded-lg font-mono text-sm" rows="4" />
+                </div>
+                <div>
+                  <label className="text-[10px] uppercase font-bold text-gray-400 ml-1">Download Form Link (URL)</label>
+                  <input type="text" name="formLink" value={formData.formLink} onChange={handleInputChange} placeholder="https://example.com/form.pdf" className="w-full px-4 py-2 border rounded-lg h-full" title="Link for the DOWNLOAD FORM button" />
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 bg-gray-50 p-2 rounded-lg">
+                <input type="checkbox" name="isPopular" checked={formData.isPopular} onChange={handleInputChange} id="isPopular" className="w-4 h-4 text-teal-600" />
+                <label htmlFor="isPopular" className="text-sm font-bold text-gray-600">Mark as Popular Course</label>
+              </div>
+
+              <div>
+                <label className="block text-[10px] uppercase font-bold text-gray-400 mb-1 ml-1 caps">Course Header Image</label>
+                <input type="file" onChange={(e) => setImageFile(e.target.files[0])} className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100 border p-2 rounded-lg" />
+              </div>
+
+              <div className="pt-4 flex gap-3 sticky bottom-0 bg-white pb-2">
+                <button type="submit" className="flex-1 bg-teal-600 text-white font-bold py-3 rounded-xl hover:bg-teal-700 shadow-lg transition">{editingCourse ? "Update All Details" : "Create Course"}</button>
+                {editingCourse && <button type="button" onClick={resetForm} className="px-6 py-3 border rounded-xl hover:bg-gray-50 transition font-bold text-gray-500">Cancel</button>}
               </div>
             </div>
           </form>

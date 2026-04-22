@@ -365,9 +365,11 @@
 
 // export default CategoriesSection;
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { FiCpu, FiPenTool, FiCode } from "react-icons/fi";
-import { courseCategories } from "../../../data/courses"; // adjust path as needed
+import { useNavigate } from "react-router-dom";
+import { courseCategories } from "../../../data/courses"; 
+import BASE_URL from "../../../config/apiConfig";
 
 const iconMap = {
   1: <FiCpu size={40} className="text-[#1ab69d]" />,
@@ -394,30 +396,95 @@ const badgeTextMap = {
 };
 
 const CourseCategoriesSection = () => {
+  const navigate = useNavigate();
+  const [counts, setCounts] = useState({ 1: 0, 2: 0, 3: 0 });
+  const [config, setConfig] = useState({
+    heading: "Explore Our Classroom Courses",
+    subheading: "Choose from a variety of categories designed to guide your learning journey.",
+    items: []
+  });
+
+  useEffect(() => {
+    fetchCounts();
+    fetchConfig();
+  }, []);
+
+  const fetchConfig = async () => {
+    try {
+      const response = await fetch(`${BASE_URL}/section-config/ClassroomCourses`);
+      if (response.ok) {
+        const data = await response.json();
+        setConfig({ 
+            heading: data.heading, 
+            subheading: data.subheading,
+            items: data.items || []
+        });
+      }
+    } catch (error) {
+      console.log("Using default config for ClassroomCourses");
+    }
+  };
+
+  const fetchCounts = async () => {
+    try {
+      const response = await fetch(`${BASE_URL}/course`);
+      if (response.ok) {
+        const courses = await response.json();
+        const newCounts = { 1: 0, 2: 0, 3: 0 };
+        courses.forEach(course => {
+          if (newCounts[course.categoryId] !== undefined) {
+            newCounts[course.categoryId]++;
+          }
+        });
+        setCounts(newCounts);
+      }
+    } catch (error) {
+      console.error("Error fetching course counts:", error);
+    }
+  };
+
   return (
-    <section className="py-16 px-4 md:px-10 lg:px-20 bg-white">
+    <section className="py-10 px-4 md:px-10 lg:px-20 bg-white">
+      {/* Dynamic Header */}
+      <div className="text-center mb-12">
+        <h2 className="text-4xl font-bold text-gray-900 mb-4">
+          {config.heading}
+        </h2>
+        <p className="text-gray-600 max-w-2xl mx-auto font-medium">
+          {config.subheading}
+        </p>
+      </div>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {courseCategories.map((cat) => (
-          <div
-            key={cat.id}
-            className={`rounded-xl ${bgMap[cat.id]} p-8 text-center transition-all duration-300 hover:shadow-md`}
-          >
-            <div className="flex items-center justify-center mb-6">
-              <div className="w-20 h-20 rounded-full flex items-center justify-center bg-white/50">
-                {iconMap[cat.id]}
-              </div>
-            </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-3 leading-snug">
-              {cat.type}
-            </h3>
-            <p className="text-sm text-gray-600 mb-6">{cat.description}</p>
-            <span
-              className={`inline-block rounded-md px-4 py-2 text-sm font-medium ${badgeBgMap[cat.id]} ${badgeTextMap[cat.id]}`}
+        {courseCategories.map((cat) => {
+          const dynamicItem = config.items.find(item => item.categoryId === cat.id);
+          const displayDescription = dynamicItem?.description || cat.description;
+          
+          return (
+            <div
+              key={cat.id}
+              onClick={() => navigate(`/category/${cat.id}`)}
+              className={`rounded-xl ${bgMap[cat.id]} p-8 text-center transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer group`}
             >
-              {cat.courses.length} Courses
-            </span>
-          </div>
-        ))}
+              <div className="flex items-center justify-center mb-6">
+                <div className="w-20 h-20 rounded-full flex items-center justify-center bg-white/50 group-hover:bg-white transition-colors">
+                  {iconMap[cat.id]}
+                </div>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3 leading-snug group-hover:text-gray-800">
+                {cat.type}
+              </h3>
+              <p className="text-sm text-gray-600 mb-6 font-medium leading-relaxed line-clamp-3">
+                {displayDescription}
+              </p>
+              <span
+                className={`inline-block rounded-lg px-6 py-2.5 text-xs font-black uppercase tracking-widest ${badgeBgMap[cat.id]} ${badgeTextMap[cat.id]} shadow-sm`}
+              >
+                {counts[cat.id]} Courses
+              </span>
+            </div>
+          );
+        })}
       </div>
     </section>
   );

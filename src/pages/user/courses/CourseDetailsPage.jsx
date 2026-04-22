@@ -225,7 +225,8 @@
 
 
 import React, { useState, useEffect } from 'react';
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
+import { FiCalendar, FiUser, FiMapPin, FiClock, FiCheckCircle, FiInfo, FiCreditCard } from "react-icons/fi";
 import BASE_URL from "../../../config/apiConfig";
 
 const CourseDetailsPage = () => {
@@ -248,170 +249,262 @@ const CourseDetailsPage = () => {
         setLoading(false);
       }
     };
+    window.scrollTo(0, 0);
     fetchCourseDetails();
   }, [courseId]);
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="animate-spin rounded-full h-12 w-12 border-4 border-teal-500 border-t-transparent"></div>
+      <div className="flex flex-col items-center">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-teal-600"></div>
+        <p className="mt-4 text-gray-500 font-bold animate-pulse uppercase tracking-widest text-xs">Loading Course Intelligence...</p>
+      </div>
     </div>
   );
 
   if (!course) return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
-      <h2 className="text-2xl font-bold text-gray-800">Course not found</h2>
-      <p className="text-gray-500 mt-2">The course you are looking for does not exist or has been removed.</p>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 px-4">
+      <div className="text-6xl mb-6">🔍</div>
+      <h2 className="text-3xl font-black text-gray-800">Resource Unavailable</h2>
+      <p className="text-gray-500 mt-2 text-center max-w-md">The academic profile you are looking for has been archived or moved by the administration.</p>
+      <Link to="/" className="mt-8 bg-teal-600 text-white font-bold py-3 px-10 rounded-full shadow-lg">Return Home</Link>
     </div>
   );
 
-  const scholarshipEligibilityRules = [
-    '8th class marks in Science and Maths after declaration of result.',
-    'Concessions based on HSAT: Helix offers huge scholarships to students through Helix Scholarship Test.',
-    'Early-bird concessions will be given to students who register in October.',
-  ];
-
-  const discountRules = [
-    'Discounts for wards of Teachers or Defence personnel. Contact HELIX office for details.',
-    'Scholarships/discounts apply only after presenting original supporting documents.',
-  ];
-
-  const onlineRegistrationSteps = [
-    'Click on “ENROL NOW” below.',
-    'Fill in the required details in the application form.',
-    'Proceed to pay online using Credit/Debit Card or Net Banking.',
-  ];
-
-  const offlineRegistrationSteps = [
-    'Download and print the application form.',
-    'Attach a passport-size photograph and fill in the details carefully.',
-    'Submit the form in the office or send a scanned copy via WhatsApp or post.',
-  ];
-
   return (
-    <main className="bg-gray-100 min-h-screen">
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-r from-teal-800 to-teal-600 text-white py-16 px-8 md:px-20 text-center overflow-hidden">
-        <div className="relative z-10">
-          <h1 className="text-5xl font-extrabold tracking-wide drop-shadow-md">{course.name}</h1>
-          <p className="text-xl mt-4 opacity-90 font-medium">Duration: {course.duration}</p>
-          <p className="text-lg mt-1 opacity-80">Category: {course.category} | Instructor: {course.instructor || "Team HELIX"}</p>
-
-          <div className="mt-8 flex justify-center gap-6">
-            <button className="bg-white text-teal-800 hover:bg-gray-100 transition-all font-bold py-3 px-8 rounded-lg shadow-xl">
-              Course Fee: {course.price}
-            </button>
-            <button className="bg-pink-500 hover:bg-pink-600 transition-all text-white font-bold py-3 px-8 rounded-lg shadow-xl">
-              Pay Online
-            </button>
-          </div>
+    <main className="bg-[#f8fafc] min-h-screen pb-20">
+      {/* Dynamic Hero Section */}
+      <section className="relative h-[450px] md:h-[550px] flex items-center overflow-hidden">
+        {/* Background Image with Overlay */}
+        <div className="absolute inset-0 z-0">
+          <img 
+            src={course.image || "https://images.unsplash.com/photo-1523050335102-c325090ea232?auto=format&fit=crop&q=80"} 
+            className="w-full h-full object-cover"
+            alt={course.name}
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-teal-950 via-teal-900/90 to-transparent"></div>
         </div>
 
-        {/* Subtle Background Element */}
-        <div
-          className="absolute inset-0 opacity-20 bg-cover bg-center mix-blend-overlay"
-          style={{ backgroundImage: `url(${course.image})` }}
-        />
+        <div className="container mx-auto px-6 md:px-12 relative z-10 text-white max-w-7xl">
+          <div className="max-w-3xl">
+             <div className="inline-flex items-center gap-2 px-3 py-1 bg-teal-500/20 backdrop-blur-md rounded-full border border-teal-400/30 text-teal-300 text-xs font-bold uppercase tracking-widest mb-6">
+                <span className="w-2 h-2 bg-teal-400 rounded-full animate-pulse"></span>
+                Official Academic Stream
+             </div>
+             <h1 className="text-4xl md:text-6xl font-black leading-tight mb-6">
+                {course.name}
+             </h1>
+             
+             <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+                <div className="flex items-center gap-3">
+                   <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center"><FiCalendar className="text-teal-400" size={20}/></div>
+                   <div>
+                      <p className="text-xs text-teal-200 uppercase font-black opacity-60">Commences</p>
+                      <p className="font-bold text-sm">{course.startDates || "April 2026"}</p>
+                   </div>
+                </div>
+                <div className="flex items-center gap-3">
+                   <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center"><FiClock className="text-teal-400" size={20}/></div>
+                   <div>
+                      <p className="text-xs text-teal-200 uppercase font-black opacity-60">Cycle</p>
+                      <p className="font-bold text-sm">{course.duration || "2 Years"}</p>
+                   </div>
+                </div>
+                <div className="flex items-center gap-3">
+                   <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center"><FiUser className="text-teal-400" size={20}/></div>
+                   <div>
+                      <p className="text-xs text-teal-200 uppercase font-black opacity-60">Eligible</p>
+                      <p className="font-bold text-sm whitespace-nowrap">{course.eligible || "10th Appeared"}</p>
+                   </div>
+                </div>
+                <div className="flex items-center gap-3">
+                   <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center"><FiMapPin className="text-teal-400" size={20}/></div>
+                   <div>
+                      <p className="text-xs text-teal-200 uppercase font-black opacity-60">Format</p>
+                      <p className="font-bold text-sm">{course.mode || "Classroom"}</p>
+                   </div>
+                </div>
+             </div>
+
+             <div className="flex flex-wrap gap-4">
+                <Link to="/pay-online" className="bg-teal-500 hover:bg-teal-400 text-white font-black py-4 px-10 rounded-2xl shadow-2xl shadow-teal-900/40 transition-all flex items-center gap-3 active:scale-95">
+                   <FiCreditCard size={20}/>
+                   ENROL NOW
+                </Link>
+                <div className="px-8 py-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl font-black">
+                   Fees: <span className="text-teal-300 ml-1">{course.price}</span>
+                </div>
+             </div>
+          </div>
+        </div>
       </section>
 
-      {/* Course Details */}
-      <section className="py-16 px-6 md:px-20 grid gap-12 max-w-7xl mx-auto">
-        {/* Course Description */}
-        <div className="bg-white p-8 md:p-12 rounded-2xl shadow-sm border-t-8 border-blue-500">
-          <h2 className="text-3xl font-bold text-gray-800 flex items-center gap-3">
-            <span className="w-2 h-8 bg-blue-500 rounded-full"></span>
-            Course Overview
-          </h2>
-          <p className="text-lg text-gray-700 mt-6 leading-relaxed">
-            {course.description}
-          </p>
-          {course.hoverDescription && (
-            <p className="text-lg text-gray-700 mt-4 leading-relaxed font-medium italic">
-              "{course.hoverDescription}"
-            </p>
-          )}
-        </div>
-
-        {/* Scholarships & Discounts */}
-        <div className="bg-white p-8 md:p-12 rounded-2xl shadow-sm border-t-8 border-green-500">
-          <h2 className="text-3xl font-bold text-gray-800 flex items-center gap-3">
-            <span className="w-2 h-8 bg-green-500 rounded-full"></span>
-            Scholarships & Discounts
-          </h2>
-
-          <div className="mt-8 grid md:grid-cols-2 gap-10">
-            <div>
-              <h3 className="text-xl font-bold text-blue-700 mb-4 bg-blue-50 px-4 py-2 rounded-lg inline-block">Eligibility Rules</h3>
-              <ul className="space-y-3">
-                {scholarshipEligibilityRules.map((rule, index) => (
-                  <li key={index} className="flex gap-3 text-gray-700">
-                    <span className="text-blue-500 font-bold">✓</span> {rule}
-                  </li>
-                ))}
-              </ul>
+      {/* Main Content Sections */}
+      <section className="container mx-auto px-6 md:px-12 -mt-16 relative z-20 max-w-7xl">
+        <div className="grid lg:grid-cols-3 gap-10">
+          
+          {/* Detailed Content (Left Column) */}
+          <div className="lg:col-span-2 space-y-10">
+            
+            {/* Descriptive Content */}
+            <div className="bg-white rounded-[2.5rem] p-10 md:p-14 shadow-xl shadow-slate-200/50 border border-slate-100">
+               <div className="flex items-center gap-4 mb-8">
+                  <div className="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600">
+                     <FiInfo size={24}/>
+                  </div>
+                  <h2 className="text-3xl font-black text-slate-900 tracking-tight">Course Description</h2>
+               </div>
+               
+               <div className="prose prose-slate max-w-none">
+                  {course.longDescription ? (
+                    <div className="text-slate-600 text-lg leading-relaxed space-y-6 whitespace-pre-line font-medium">
+                       {course.longDescription}
+                    </div>
+                  ) : (
+                    <p className="text-slate-500 text-lg italic">Details for this specific program are being finalized by the academic board.</p>
+                  )}
+               </div>
             </div>
 
-            <div>
-              <h3 className="text-xl font-bold text-green-700 mb-4 bg-green-50 px-4 py-2 rounded-lg inline-block">Special Discounts</h3>
-              <ul className="space-y-3">
-                {discountRules.map((rule, index) => (
-                  <li key={index} className="flex gap-3 text-gray-700">
-                    <span className="text-green-500 font-bold">✓</span> {rule}
-                  </li>
-                ))}
-              </ul>
+            {/* Admission & Scholarship Detail Block */}
+            <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-[2.5rem] p-10 md:p-14 text-white shadow-2xl shadow-slate-900/20">
+               <div className="flex items-center gap-4 mb-8">
+                  <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center text-teal-400">
+                     <FiCheckCircle size={24}/>
+                  </div>
+                  <h2 className="text-3xl font-black tracking-tight">Scholarships & Discounts</h2>
+               </div>
+
+               <div className="space-y-6">
+                  {course.scholarshipDetails ? (
+                    <div className="text-slate-200 text-lg leading-relaxed whitespace-pre-line font-medium opacity-90">
+                       {course.scholarshipDetails}
+                    </div>
+                  ) : (
+                    <p className="text-slate-400 italic">Detailed scholarship information is available on request at the Helix office.</p>
+                  )}
+               </div>
+
+               <div className="mt-12 p-8 bg-white/5 rounded-3xl border border-white/10">
+                  <p className="text-teal-400 text-sm font-black uppercase tracking-[0.2em] mb-4">Note for Applicants</p>
+                  <p className="text-slate-200 text-md font-medium leading-relaxed italic">
+                    "For scholarship entry, students must participate in any one of the helix tests conducted across the academic window (Oct, Jan, March). Scholarship tiers are strictly based on Merit scores."
+                  </p>
+               </div>
+            </div>
+
+            {/* Registration Process Block */}
+            <div className="bg-white rounded-[2.5rem] p-10 md:p-14 shadow-xl shadow-slate-200/50 border border-slate-100">
+               <div className="flex items-center gap-4 mb-8">
+                  <div className="w-12 h-12 bg-purple-50 rounded-2xl flex items-center justify-center text-purple-600">
+                     <FiCheckCircle size={24}/>
+                  </div>
+                  <h2 className="text-3xl font-black text-slate-900 tracking-tight">How to Register</h2>
+               </div>
+
+               <div className="grid md:grid-cols-2 gap-10">
+                  {/* Online Mode */}
+                  <div className="space-y-4">
+                     <h3 className="text-xl font-bold text-teal-700 bg-teal-50 px-4 py-2 rounded-xl inline-block">Online Mode</h3>
+                     {course.registrationStepsOnline ? (
+                        <div className="text-slate-600 text-md leading-relaxed whitespace-pre-line font-medium">
+                           {course.registrationStepsOnline}
+                        </div>
+                     ) : (
+                        <p className="text-slate-400 italic text-sm">Online steps coming soon.</p>
+                     )}
+                  </div>
+
+                  {/* Offline Mode */}
+                  <div className="space-y-4">
+                     <h3 className="text-xl font-bold text-purple-700 bg-purple-50 px-4 py-2 rounded-xl inline-block">Offline Mode</h3>
+                     {course.registrationStepsOffline ? (
+                        <div className="text-slate-600 text-md leading-relaxed whitespace-pre-line font-medium mb-6">
+                           {course.registrationStepsOffline}
+                        </div>
+                     ) : (
+                        <p className="text-slate-400 italic text-sm mb-6">Offline steps coming soon.</p>
+                     )}
+                     {course.formLink && (
+                        <a 
+                           href={course.formLink} 
+                           target="_blank" 
+                           rel="noopener noreferrer"
+                           className="flex items-center justify-center gap-2 w-full bg-purple-600 hover:bg-purple-700 text-white font-black py-4 rounded-2xl shadow-lg transition-all"
+                        >
+                           <FiInfo size={18}/>
+                           DOWNLOAD FORM
+                        </a>
+                     )}
+                  </div>
+               </div>
             </div>
           </div>
 
-          <p className="mt-10 p-4 bg-gray-50 rounded-xl italic text-gray-600 text-center border border-dashed border-gray-300">
-            "For detailed scholarship information, contact Helix office numbers listed on the website."
-          </p>
-        </div>
-
-        {/* Registration Process */}
-        <div className="bg-white p-8 md:p-12 rounded-2xl shadow-sm border-t-8 border-purple-500">
-          <h2 className="text-3xl font-bold text-gray-800 flex items-center gap-3">
-            <span className="w-2 h-8 bg-purple-500 rounded-full"></span>
-            Registration Process
-          </h2>
-
-          <div className="mt-8 grid md:grid-cols-2 gap-12">
-            <div>
-              <h3 className="text-xl font-bold text-blue-700 mb-4">Online Registration</h3>
-              <ul className="space-y-4 mb-6">
-                {onlineRegistrationSteps.map((step, index) => (
-                  <li key={index} className="flex gap-3 text-gray-700">
-                    <span className="w-6 h-6 flex-shrink-0 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xs font-bold">{index + 1}</span>
-                    {step}
-                  </li>
-                ))}
-              </ul>
-              <button className="w-full bg-blue-600 hover:bg-blue-700 transition-all text-white font-bold py-4 px-6 rounded-xl shadow-lg">
-                ENROL NOW
-              </button>
+          {/* Sidebar / Quick Actions (Right Column) */}
+          <div className="space-y-8">
+            {/* Quick Stats Card */}
+            <div className="bg-white rounded-[2rem] p-8 shadow-lg border border-slate-50">
+               <h3 className="text-xl font-black text-slate-800 mb-6 flex items-center gap-2">
+                  <span className="w-1.5 h-6 bg-teal-500 rounded-full"></span>
+                  Quick Summary
+               </h3>
+               <div className="space-y-6">
+                  <div className="flex justify-between items-center py-3 border-b border-slate-50">
+                     <span className="text-slate-400 text-sm font-bold uppercase">Intensity</span>
+                     <span className="text-slate-900 font-black">{course.intensity || "Full-Time"}</span>
+                  </div>
+                  <div className="flex justify-between items-center py-3 border-b border-slate-50">
+                     <span className="text-slate-400 text-sm font-bold uppercase">Instructor</span>
+                     <span className="text-slate-900 font-black">{course.instructor || "Helix Team"}</span>
+                  </div>
+                  <div className="flex justify-between items-center py-3 border-b border-slate-50">
+                     <span className="text-slate-400 text-sm font-bold uppercase">Modules</span>
+                     <span className="text-slate-900 font-black">{course.modulesCount || "Verified Curriculum"}</span>
+                  </div>
+                  <div className="flex justify-between items-center py-3">
+                     <span className="text-slate-400 text-sm font-bold uppercase">Popularity</span>
+                     <span className="text-teal-600 font-black">{course.popularityRanking || "Top Listed"}</span>
+                  </div>
+               </div>
             </div>
 
-            <div className="flex flex-col justify-between">
-              <div>
-                <h3 className="text-xl font-bold text-green-700 mb-4">Offline Registration</h3>
-                <ul className="space-y-4 mb-6">
-                  {offlineRegistrationSteps.map((step, index) => (
-                    <li key={index} className="flex gap-3 text-gray-700">
-                      <span className="w-6 h-6 flex-shrink-0 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-xs font-bold">{index + 1}</span>
-                      {step}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <button className="w-full bg-purple-600 hover:bg-purple-700 transition-all text-white font-bold py-4 px-6 rounded-xl shadow-lg mt-4">
-                Download Offline Form
-              </button>
+            {/* Need Help Card */}
+            <div className="bg-teal-600 rounded-[2rem] p-8 text-white relative overflow-hidden group">
+               <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700"></div>
+               <h3 className="text-2xl font-black mb-4 relative z-10">Need Guidance?</h3>
+               <p className="text-teal-50 text-md mb-8 relative z-10 opacity-80 leading-relaxed font-medium">
+                  Not sure if this course matches your academic goals? Speak with our counsellors today.
+               </p>
+               <Link to="/contact-us" className="inline-block w-full text-center bg-white text-teal-700 font-black py-4 rounded-2xl relative z-10 shadow-xl shadow-teal-950/20 active:scale-95 transition-transform">
+                  TALK TO COUNSELLOR
+               </Link>
+            </div>
+
+            {/* Fees Highlights */}
+            <div className="bg-slate-100/50 rounded-[2rem] p-8 border border-white">
+               <h3 className="text-lg font-black text-slate-700 mb-4 tracking-tight">Investment Details</h3>
+               <p className="text-5xl font-black text-slate-900 mb-2">{course.price}</p>
+               <p className="text-xs text-slate-400 font-bold uppercase tracking-wider mb-6">Standard Academic Fee</p>
+               <Link to="/pay-installment" className="flex items-center justify-between p-4 bg-white rounded-2xl border border-slate-200 text-slate-600 font-bold hover:bg-slate-50 transition-colors">
+                  Pay in Installments
+                  <FiArrowRight />
+               </Link>
             </div>
           </div>
+
         </div>
       </section>
     </main>
   );
 };
+
+const FiArrowRight = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="5" y1="12" x2="19" y2="12"></line>
+    <polyline points="12 5 19 12 12 19"></polyline>
+  </svg>
+)
 
 export default CourseDetailsPage;
 

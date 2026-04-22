@@ -24,7 +24,7 @@ const AdminLoginPage = () => {
     // === REAL API LOGIN (only if not using dummy) ===
     try {
       // Replace this endpoint with your real API if needed
-      const response = await fetch(" https://c516sfpc-3000.inc1.devtunnels.ms/auth/login", {
+      const response = await fetch(" https://kzlhxr7v-3000.inc1.devtunnels.ms/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Outlet, Link, useNavigate } from 'react-router-dom';
-import { FaBars, FaCog, FaSignOutAlt, FaUserAlt, FaImage, FaPhotoVideo, FaDesktop, FaCreditCard, FaBriefcase, FaDownload, FaUserTie } from 'react-icons/fa';
+import { FaBars, FaCog, FaSignOutAlt, FaUserAlt, FaImage, FaPhotoVideo, FaDesktop, FaCreditCard, FaBriefcase, FaDownload, FaUserTie, FaStar } from 'react-icons/fa';
 
 const AdminLayout = () => {
   const navigate = useNavigate();
@@ -71,6 +71,27 @@ const AdminLayout = () => {
                 >
                   <FaPhotoVideo size={20} />
                   {isSidebarOpen && <span>Testimonials Images</span>}
+                </Link>
+                <Link
+                  to="/admin/home-sections"
+                  className="flex items-center gap-4 text-lg hover:text-gray-300"
+                >
+                  <FaCog size={20} />
+                  {isSidebarOpen && <span>Section Content</span>}
+                </Link>
+                <Link
+                  to="/admin/home-success-stories"
+                  className="flex items-center gap-4 text-lg hover:text-gray-300"
+                >
+                  <FaUserTie size={20} />
+                  {isSidebarOpen && <span>Success Stories</span>}
+                </Link>
+                <Link
+                  to="/admin/home-salient-features"
+                  className="flex items-center gap-4 text-lg hover:text-gray-300"
+                >
+                  <FaStar size={20} />
+                  {isSidebarOpen && <span>Salient Features</span>}
                 </Link>
               </div>
             )}

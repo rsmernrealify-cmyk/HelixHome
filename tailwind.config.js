@@ -12,7 +12,7 @@ module.exports = {
   theme: {
     extend: {
       animation: {
-        marquee: "marquee 15s linear infinite",
+        marquee: "marquee 30s linear infinite",
 
         spin: "spin 2s linear infinite",
       },

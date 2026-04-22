@@ -174,40 +174,40 @@
 // export default SuccessStoriesSlider;
 
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { FaPlay } from "react-icons/fa";
 import "../../../../src/scrollbar.css";
-import SailentImage from "../../../assets/sailent.jpg";
-
-const stories = [
-  {
-    id: 1,
-    image: "https://i.ytimg.com/vi/WXYZ123/hqdefault.jpg",
-    title: "No shortcuts! From AIR 27,249 to AIR 1,341",
-  },
-  {
-    id: 2,
-    image: "https://i.ytimg.com/vi/WXYZ456/hqdefault.jpg",
-    title: "From Bankura to a Govt. Medical College",
-  },
-  {
-    id: 3,
-    image: "https://i.ytimg.com/vi/WXYZ789/hqdefault.jpg",
-    title: "AIR 29284 Then. AIR 2095 Now. My Comeback Story",
-  },
-  {
-    id: 4,
-    image: "https://i.ytimg.com/vi/WXYZ101/hqdefault.jpg",
-    title: "Laser sharp focus led him to success",
-  },
-  {
-    id: 5,
-    image: "https://i.ytimg.com/vi/WXYZ102/hqdefault.jpg",
-    title: "Debater. Flute player. IITian. He did it all!",
-  },
-];
+import BASE_URL from "../../../config/apiConfig";
 
 function SuccessStoriesSlider() {
+  const [stories, setStories] = useState([]);
+
+  useEffect(() => {
+    const fetchStories = async () => {
+      try {
+        const response = await fetch(`${BASE_URL}/success-story`);
+        if (response.ok) {
+          const data = await response.json();
+          setStories(data);
+        }
+      } catch (error) {
+        console.error("Error fetching stories:", error);
+      }
+    };
+    fetchStories();
+  }, []);
+
+  // Helper to extract YouTube Video ID
+  const getThumbnail = (url) => {
+    const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    const videoId = (match && match[2].length === 11) ? match[2] : null;
+    // Using hqdefault for better quality
+    return videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : "https://via.placeholder.com/320x180";
+  };
+
+  if (!stories.length) return null;
+
   return (
     <div className="w-full bg-white py-10 px-4">
       <div className="max-w-7xl mx-auto">
@@ -215,42 +215,48 @@ function SuccessStoriesSlider() {
           {/* Left Side Heading */}
           <div className="min-w-[200px] flex-shrink-0">
             <div className="flex items-center gap-2 mb-2">
-              <div className="bg-red-600 w-6 h-6 rounded-md flex items-center justify-center">
-                <FaPlay className="text-white text-xs" />
+              <div className="bg-red-600 w-6 h-6 rounded-md flex items-center justify-center shadow-lg shadow-red-100">
+                <FaPlay className="text-white text-[10px]" />
               </div>
-              <div className="w-1 h-4 bg-gray-400" />
+              <div className="w-1 h-4 bg-gray-300" />
             </div>
-            <h2 className="text-xl font-bold text-gray-900">Success Stories</h2>
-            <p className="text-sm text-gray-500 mt-1">Students who inspire us !</p>
+            <h2 className="text-2xl font-black text-gray-900 tracking-tight">Success Stories</h2>
+            <p className="text-sm font-medium text-gray-500 mt-1">Students who inspire us !</p>
           </div>
 
           {/* Horizontal Scrollable Cards */}
-          <div className="overflow-x-auto flex gap-4 scrollbar-hide pb-4 w-full">
+          <div className="overflow-x-auto flex gap-5 scrollbar-hide pb-4 w-full px-2">
             {stories.map((story) => (
-              <div
-                key={story.id}
-                className="relative w-44 min-w-[180px] h-64 rounded-xl overflow-hidden flex-shrink-0 bg-black group"
+              <a
+                key={story._id}
+                href={story.youtubeLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="relative w-48 min-w-[200px] h-64 rounded-2xl overflow-hidden flex-shrink-0 bg-gray-900 group shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
               >
                 <img
-                  src={SailentImage}
+                  src={getThumbnail(story.youtubeLink)}
                   alt={story.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition"
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                 />
                 {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
 
                 {/* Play Button */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="bg-white p-3 rounded-full">
-                    <FaPlay className="text-blue-600 text-sm" />
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="bg-white/90 backdrop-blur-sm p-4 rounded-full shadow-2xl scale-75 group-hover:scale-100 transition-transform duration-500">
+                    <FaPlay className="text-red-600 text-lg ml-1" />
                   </div>
                 </div>
 
                 {/* Title */}
-                <div className="absolute bottom-4 left-4 right-4">
-                  <h3 className="text-white text-sm font-semibold leading-snug">{story.title}</h3>
+                <div className="absolute bottom-5 left-4 right-4">
+                   <div className="bg-red-600 w-8 h-1 rounded-full mb-3 group-hover:w-16 transition-all duration-500"></div>
+                  <h3 className="text-white text-sm font-bold leading-tight line-clamp-2 group-hover:text-red-100">
+                    {story.title}
+                  </h3>
                 </div>
-              </div>
+              </a>
             ))}
           </div>
         </div>

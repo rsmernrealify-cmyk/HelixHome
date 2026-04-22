@@ -83,6 +83,10 @@ import { SliderImagePage } from '../pages/admin/SliderImagePage';
 import SyllabusUplaodPage from '../pages/admin/SyllabusUplaodPage';
 import ScholarshipTestFormPage from '../pages/admin/ScholarShipTestFromPage';
 import DirectorDeskEditForm from '../pages/admin/DirectorDeskEditPage';
+import NeetAnswerKeyAdmin from '../pages/admin/NeetAnswerKeyAdmin';
+import SectionConfigPanel from '../components/admin/home/SectionConfigPanel';
+import SuccessStoriesPanel from '../components/admin/home/SuccessStoriesPanel';
+import SalientFeaturesPanel from '../components/admin/home/SalientFeaturesPanel';
 
 const AdminRoutes = () => {
   return (
@@ -108,6 +112,10 @@ const AdminRoutes = () => {
         <Route path="/syllabusUpload" element={isAuthenticated() ? <SyllabusUplaodPage/> : <Navigate to="/admin/login" />} />
         <Route path="/scholasrhipTests-from" element={isAuthenticated() ? <ScholarshipTestFormPage/> : <Navigate to="/admin/login" />} />
         <Route path="/directorDesk-edit" element={isAuthenticated() ? <DirectorDeskEditForm/> : <Navigate to="/admin/login" />} />    
+        <Route path="/download-neet-answer-key" element={isAuthenticated() ? <NeetAnswerKeyAdmin/> : <Navigate to="/admin/login" />} />
+        <Route path="/home-sections" element={isAuthenticated() ? <SectionConfigPanel /> : <Navigate to="/admin/login" />} />
+        <Route path="/home-success-stories" element={isAuthenticated() ? <SuccessStoriesPanel /> : <Navigate to="/admin/login" />} />
+        <Route path="/home-salient-features" element={isAuthenticated() ? <SalientFeaturesPanel /> : <Navigate to="/admin/login" />} />
         {/* Add more admin routes here */}
       </Route>
     </Routes>
