@@ -205,6 +205,7 @@
 // export default TestimonialsPanel;
 
 import React, { useState, useEffect } from "react";
+import BASE_URL from "../../../config/apiConfig";
 
 const TestimonialsPanel = () => {
   const [testimonials, setTestimonials] = useState([]);
@@ -222,7 +223,7 @@ const TestimonialsPanel = () => {
   useEffect(() => {
     const fetchTestimonials = async () => {
       try {
-        const response = await fetch("https://p6lh6946-3000.inc1.devtunnels.ms/testimonial/testimonials");
+        const response = await fetch(`${BASE_URL}/testimonial/testimonials`);
         if (response.ok) {
           const data = await response.json();
           console.log("Fetched testimonials:", data); // Log the fetched testimonials
@@ -264,8 +265,8 @@ const TestimonialsPanel = () => {
     }
 
     const apiUrl = editingIndex !== null
-      ? `https://p6lh6946-3000.inc1.devtunnels.ms/testimonial/testimonial/${testimonials[editingIndex]._id}`
-      : "https://p6lh6946-3000.inc1.devtunnels.ms/testimonial/testimonial"; // For new testimonial
+      ? `${BASE_URL}/testimonial/testimonial/${testimonials[editingIndex]._id}`
+      : `${BASE_URL}/testimonial/testimonial`; // For new testimonial
 
     try {
       const response = await fetch(apiUrl, {
@@ -277,7 +278,7 @@ const TestimonialsPanel = () => {
         const newTestimonialData = await response.json();
 
         // Fetch the updated testimonials list after adding or editing
-        const updatedTestimonialsResponse = await fetch("https://p6lh6946-3000.inc1.devtunnels.ms/testimonial/testimonial");
+        const updatedTestimonialsResponse = await fetch(`${BASE_URL}/testimonial/testimonial`);
         if (updatedTestimonialsResponse.ok) {
           const updatedTestimonialsData = await updatedTestimonialsResponse.json();
           setTestimonials(updatedTestimonialsData);
@@ -312,7 +313,7 @@ const TestimonialsPanel = () => {
   // Show Testimonial Details (When "Fetch Testimonial" is clicked)
   const handleFetchTestimonial = async (id) => {
     try {
-      const response = await fetch(`https://p6lh6946-3000.inc1.devtunnels.ms/testimonial/testimonials`);
+      const response = await fetch(`${BASE_URL}/testimonial/testimonials`);
       if (response.ok) {
         const data = await response.json();
         // Display the fetched data in the UI

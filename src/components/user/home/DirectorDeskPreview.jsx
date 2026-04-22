@@ -94,17 +94,43 @@
 
 // export default DirectorsDeskPreview;
 
-import React from "react";
-import directorImage from "../../../assets/directorImage.jpg";
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import BASE_URL from "../../../config/apiConfig";
+
 
 export default function DirectorDeskPreview() {
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    const fetchDirectorDesk = async () => {
+      try {
+        const response = await fetch(`${BASE_URL}/director-desk`);
+        if (response.ok) {
+          const result = await response.json();
+          // Check if result is empty object
+          if (result && Object.keys(result).length > 0) {
+            setData(result);
+          } else {
+            setData(null);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching Director's Desk:", error);
+      }
+    };
+    fetchDirectorDesk();
+  }, []);
+
+  if (!data) return null;
+
   return (
     <div className="min-h-screen bg-white flex flex-col md:flex-row items-center justify-center px-4 py-8">
       {/* Left visual/content block */}
       <div className="relative bg-white rounded-2xl shadow-lg p-4 md:p-8 flex flex-col items-center max-w-sm w-full md:w-[400px]">
         <img
-          src={directorImage}
-          alt="Student using laptop"
+          src={data.image}
+          alt="Director"
           className="w-full aspect-square object-cover rounded-xl"
         />
         {/* Ray Sanchez Card */}
@@ -113,44 +139,50 @@ export default function DirectorDeskPreview() {
             <svg width="28" height="28" viewBox="0 0 32 32"><circle cx="16" cy="16" r="14" stroke="#fbbf24" strokeWidth="4" fill="none" /></svg>
           </div>
           <div>
-            <span className="block font-bold text-gray-800 text-base">M.L Syal </span>
-            <span className="block text-gray-400 text-xs mt-1">Minim veniam nostrud exer citation.</span>
+            <span className="block font-bold text-gray-800 text-base">{data.signature?.split('\n')[0] || "M.L Syal"}</span>
+            <span className="block text-gray-400 text-xs mt-1">{data.signature?.split('\n')[1] || "Director"}</span>
           </div>
         </div>
         {/* Learners badge */}
         <div className="absolute -top-6 left-4 bg-white rounded-xl shadow-md flex items-center gap-3 px-5 py-2 border border-[#f2f5fa]">
           <span className="inline-flex items-center justify-center w-7 h-7 bg-pink-100 rounded-full text-pink-600">
-            <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M10 10a3 3 0 100-6 3 3 0 000 6zM10 12c-3.25 0-6 1.21-6 3.25V17h12v-1.75C16 13.21 13.25 12 10 12z" fill="#ec4899"/></svg>
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M10 10a3 3 0 100-6 3 3 0 000 6zM10 12c-3.25 0-6 1.21-6 3.25V17h12v-1.75C16 13.21 13.25 12 10 12z" fill="#ec4899" /></svg>
           </span>
           <div>
-            <span className="text-pink-600 font-bold text-xl">20K+</span>
-            <span className="block text-gray-500 text-sm -mt-0.5">Enrolled Learners</span>
+            <span className="text-pink-600 font-bold text-xl">25+ Yrs</span>
+            <span className="block text-gray-500 text-sm -mt-0.5">Academic Excellence</span>
           </div>
         </div>
       </div>
       {/* Right TEXT block */}
       <div className="flex flex-col justify-center w-full max-w-3xl md:pl-12 mt-20 md:mt-0">
-        <span className="uppercase tracking-widest text-xs text-gray-500 font-medium mb-2">About Us</span>
+        <span className="uppercase tracking-widest text-xs text-gray-500 font-medium mb-2">Director's Message</span>
         <h1 className="text-4xl font-extrabold text-gray-900 mb-4 leading-snug">
-          Over 10 Years in <span className="text-pink-500">Distant learning</span> for Skill Development
+          {data.title}
         </h1>
-        <p className="text-gray-500 mb-6">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit sed eiusmod ex tempor incididunt labore dolore magna aliquaenim ad minim.
+        <p className="text-gray-500 mb-6 line-clamp-4">
+          {data.content && data.content[0]}
         </p>
-        <ul className="space-y-2 mb-6">
+        <ul className="space-y-2 mb-8">
           <li className="flex items-center gap-2 text-gray-900 font-medium">
             <span className="text-yellow-400 font-bold">&#10003;</span>
-            Expert Trainers
+            Expert Faculty
           </li>
           <li className="flex items-center gap-2 text-gray-900 font-medium">
             <span className="text-yellow-400 font-bold">&#10003;</span>
-            Online Remote Learning
+            Personalized Mentorship
           </li>
           <li className="flex items-center gap-2 text-gray-900 font-medium">
             <span className="text-yellow-400 font-bold">&#10003;</span>
-            Lifetime Access
+            Proven Track Record
           </li>
         </ul>
+        <Link
+          to="/director-desk"
+          className="bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-8 rounded-lg w-fit transition shadow-lg"
+        >
+          Read Full Message
+        </Link>
       </div>
     </div>
   );

@@ -73,25 +73,32 @@
 
 // export default DirectorsDesk;
 
-import React, { useState } from "react";
-import directorImage from "../../../assets/directorImage.jpg"; // This will be dynamic in the future.
+import React, { useState, useEffect } from "react";
+import BASE_URL from "../../../config/apiConfig";
 
 function DirectorsDesk() {
-  const [directorData, setDirectorData] = useState({
-    image: directorImage,
-    message: {
-      title: "A Message from Our Director",
-      content: [
-        "This gives me immense happiness to announce that with wholehearted co-operation of teaching and administrative staff, we have successfully entered the Twelveth year under the banner of Helix Institute.",
-        "Success in Medical Entrance Examinations, in face of a stiff and cut-throat competition, calls for a planned approach and cultivation of requisite skills. Developing such skills and attitude not only requires dedication and hard work on the part of students, but also proper guidance and training from mentor.",
-        "Addressing the above needs of students, we at preface, have crafted the exclusive study material, expose them to highly competitive environment, make them conceptually very strong, clear their doubts in totality and make them comfortable while attempting both competitive as well as Board examinations.",
-        "Helix is a place where teaching staff, administrative staff and parents work together to achieve prosperous and secure future in academics for every student. Our students, the learners of today, will be prepared well to face the highly competitive entrance examinations.",
-        "I am continuously making efforts to impart best education to students and in years to come, probably I will be able to raise standards of this institute up to the level that parents find it easy to choose this institute as best option for their ward's education among hub of institutes in this region.",
-        "We are proud of the success that our students have achieved in the past. Finally I sum up by saying that our main objective is to model this establishment as a center of excellence for the students wishing to choose their career path in Medical fields."
-      ],
-      signature: "M.L Syal \n Director, HELIX Institute"
-    }
-  });
+  const [directorData, setDirectorData] = useState(null);
+
+  useEffect(() => {
+    const fetchDirectorDesk = async () => {
+      try {
+        const response = await fetch(`${BASE_URL}/director-desk`);
+        if (response.ok) {
+          const result = await response.json();
+          if (result && Object.keys(result).length > 0) {
+            setDirectorData(result);
+          } else {
+            setDirectorData(null);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching Director's Desk:", error);
+      }
+    };
+    fetchDirectorDesk();
+  }, []);
+
+  if (!directorData) return null;
 
   return (
     <div className="bg-gray-50 min-h-screen">
@@ -109,16 +116,16 @@ function DirectorsDesk() {
           {/* Director's Message */}
           <div className="col-span-2 space-y-6">
             <h2 className="text-4xl font-bold text-gray-800">
-              {directorData.message.title}
+              {directorData.title}
             </h2>
-            {directorData.message.content.map((paragraph, index) => (
+            {directorData.content && directorData.content.map((paragraph, index) => (
               <p key={index} className="text-gray-700 leading-relaxed">
                 {paragraph}
               </p>
             ))}
-            <p className="text-gray-700 font-semibold">
-              {directorData.message.signature}
-            </p>
+            <div className="text-gray-700 font-bold mt-8 whitespace-pre-line border-t pt-4">
+              {directorData.signature}
+            </div>
           </div>
         </div>
       </section>

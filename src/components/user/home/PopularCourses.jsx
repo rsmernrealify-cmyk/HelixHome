@@ -208,29 +208,46 @@
 // export default PopularCourses;
 
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { CalendarDays, Users, Clock } from "lucide-react";
-import { courseCategories } from "../../../data/courses"
+import BASE_URL from "../../../config/apiConfig";
 
 const PopularCourses = () => {
-  const courses = courseCategories.flatMap(category => category.courses);
+  const [courses, setCourses] = useState([]);
+
+  useEffect(() => {
+    const fetchPopularCourses = async () => {
+      try {
+        const response = await fetch(`${BASE_URL}/course?isPopular=true`);
+        if (response.ok) {
+          const data = await response.json();
+          setCourses(data);
+        }
+      } catch (error) {
+        console.error("Error fetching popular courses:", error);
+      }
+    };
+    fetchPopularCourses();
+  }, []);
+
+  if (!courses.length) return null;
 
   return (
     <section className="popular-courses-section bg-[#f3f4f6] py-20">
       <div className="container mx-auto px-4">
         <div className="text-center mb-14">
           <h2 className="text-[40px] font-bold text-[#0f172a] mb-4">
-            Popular <span className="text-[#6366f1]">Courses</span>
+            Popular <span className="text-teal-600">Courses</span>
           </h2>
           <p className="text-[#475569] text-[18px] max-w-2xl mx-auto">
-            Choose from our best medical, engineering, and foundation programs.
+            Choose from our best-reviewed medical, engineering, and foundation programs.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-          {courses.map((course, index) => (
+          {courses.map((course) => (
             <div
-              key={index}
+              key={course._id}
               className="relative bg-white rounded-2xl shadow-md hover:shadow-xl transition duration-300 overflow-hidden group"
             >
               <div className="overflow-hidden">
@@ -242,38 +259,47 @@ const PopularCourses = () => {
               </div>
 
               <div className="p-6">
-                <div className="text-sm text-[#6366f1] font-medium mb-2">By {course.instructor || "Team HELIX"}</div>
-                <h3 className="text-xl font-semibold text-[#0f172a] mb-3 leading-7 group-hover:text-[#6366f1] transition">
+                <div className="text-sm text-teal-600 font-bold mb-2 uppercase tracking-wide">
+                  {course.category}
+                </div>
+                <h3 className="text-xl font-bold text-[#0f172a] mb-3 leading-7 group-hover:text-teal-600 transition h-14 line-clamp-2">
                   {course.name}
                 </h3>
-                <p className="text-sm text-[#475569] mb-4">{course.description}</p>
 
-                <div className="flex justify-between items-center text-sm text-[#64748b] mb-4">
+                <div className="flex justify-between items-center text-sm text-[#64748b] mb-6">
                   <div className="flex items-center gap-2">
-                    <CalendarDays className="w-4 h-4" />
-                    {course.lessons || "—"} Lessons
+                    <CalendarDays className="w-4 h-4 text-teal-500" />
+                    {course.lessons || "0"} Lessons
                   </div>
                   <div className="flex items-center gap-2">
-                    <Users className="w-4 h-4" />
-                    {course.students || "—"} Students
+                    <Users className="w-4 h-4 text-teal-500" />
+                    {course.students || "0"} Students
                   </div>
                 </div>
 
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center gap-2 text-sm text-[#64748b]">
-                    <Clock className="w-4 h-4" />
-                    {course.duration || "—"}
+                <div className="flex justify-between items-center pt-4 border-t border-gray-100">
+                  <div className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+                    <Clock className="w-4 h-4 text-teal-500" />
+                    {course.duration}
                   </div>
-                  <span className="text-[#6366f1] font-bold text-[16px]">{course.price || "Free"}</span>
+                  <span className="text-pink-600 font-extrabold text-lg">{course.price}</span>
                 </div>
               </div>
 
-              <div className="absolute inset-0 bg-[#6366f1]/95 text-white p-6 flex flex-col justify-center items-center text-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <h3 className="text-lg font-semibold mb-2">{course.name}</h3>
-                <p className="text-sm mb-4">{course.hoverDescription || course.description}</p>
-                <button className="bg-white text-[#6366f1] font-semibold px-5 py-2 rounded-full text-sm hover:bg-gray-100 transition">
-                  Enroll Now
-                </button>
+              {/* Hover Overlay */}
+              <div className="absolute inset-0 bg-teal-600/95 text-white p-6 flex flex-col justify-center items-center text-center translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                <h3 className="text-xl font-bold mb-4">{course.name}</h3>
+                <p className="text-sm mb-8 leading-relaxed">
+                  {course.hoverDescription || course.description}
+                </p>
+                <div className="flex flex-col gap-3 w-full">
+                  <button className="bg-white text-teal-600 font-bold px-6 py-2.5 rounded-lg text-sm hover:bg-gray-100 transition shadow-lg">
+                    View Details
+                  </button>
+                  <button className="border-2 border-white text-white font-bold px-6 py-2.5 rounded-lg text-sm hover:bg-white hover:text-teal-600 transition">
+                    Enroll Now
+                  </button>
+                </div>
               </div>
             </div>
           ))}
@@ -284,3 +310,5 @@ const PopularCourses = () => {
 };
 
 export default PopularCourses;
+
+

@@ -90,37 +90,30 @@
 
 
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Star } from "lucide-react";
-
-const testimonials = [
-  {
-    id: 1,
-    name: "Tom Hurley",
-    role: "Content Creator",
-    image: "https://demo.edublink.co/distant-learning/wp-content/uploads/2022/10/testimonial-02-150x150.jpg",
-    text: "Lorem ipsum dolor amet consec tur elit adicing sed do usmod zx tempor enim minim veniam quis nostrud exer citation.",
-    rating: 5,
-  },
-  {
-    id: 2,
-    name: "Bob Limones",
-    role: "Student",
-    image: "https://demo.edublink.co/distant-learning/wp-content/uploads/2022/10/testimonial-01-150x150.jpg",
-    text: "Lorem ipsum dolor amet consec tur elit adicing sed do usmod zx tempor enim minim veniam quis nostrud exer citation.",
-    rating: 5,
-  },
-  {
-    id: 3,
-    name: "Robert Lane",
-    role: "Developer",
-    image: "https://demo.edublink.co/distant-learning/wp-content/uploads/2022/10/testimonial-03-150x150.jpg",
-    text: "Lorem ipsum dolor amet consec tur elit adicing sed do usmod zx tempor enim minim veniam quis nostrud exer citation.",
-    rating: 4,
-  },
-];
+import BASE_URL from "../../../config/apiConfig";
 
 const Testimonials = () => {
+  const [testimonials, setTestimonials] = useState([]);
+
+  useEffect(() => {
+    const fetchTestimonials = async () => {
+      try {
+        const response = await fetch(`${BASE_URL}/testimonial/testimonials`);
+        if (response.ok) {
+          const data = await response.json();
+          setTestimonials(data);
+        }
+      } catch (error) {
+        console.error("Error fetching testimonials:", error);
+      }
+    };
+    fetchTestimonials();
+  }, []);
+
+  if (!testimonials.length) return null;
+
   return (
     <section className="py-24 bg-white">
       <div className="container mx-auto px-4">
@@ -133,66 +126,48 @@ const Testimonials = () => {
             </h2>
             <div className="w-16 h-2 bg-teal-400 rounded-full mb-6"></div>
             <p className="text-gray-500 text-lg mb-8 max-w-md">
-              Lorem ipsum dolor sit amet consectetur adipiscing elit sed eiusmod tempor incididunt labore dolore magna aliquaenim ad minim.
+              Real success stories from our brilliant students who achieved their dreams with Helix.
             </p>
             <button className="bg-teal-500 hover:bg-teal-600 transition text-white font-semibold px-6 py-3 rounded-md text-sm">
-              View All →
+              View All Success Stories →
             </button>
           </div>
 
-          {/* Testimonials Slider */}
+          {/* Testimonials List/Slider Container */}
           <div className="relative overflow-hidden">
-            <div className="flex gap-6 transition-all duration-500">
-              {testimonials.map((testimonial, index) => (
+            <div className="flex flex-col gap-6">
+              {testimonials.slice(0, 3).map((testimonial) => (
                 <div
-                  key={testimonial.id}
-                  className={`bg-white p-8 rounded-2xl shadow-lg relative w-full max-w-md`}
+                  key={testimonial._id}
+                  className={`bg-white p-8 rounded-2xl shadow-lg relative w-full border border-gray-50`}
                 >
-                  <div className="absolute top-6 left-6 w-12 h-12">
+                  <div className="flex items-center gap-4 mb-6">
                     <img
                       src={testimonial.image}
                       alt={testimonial.name}
-                      className="w-12 h-12 rounded-full border-2 border-white shadow-md"
+                      className="w-14 h-14 rounded-full object-cover border-2 border-teal-50 shadow-sm"
                     />
-                    <span className="absolute -bottom-1 -right-1 bg-teal-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
-                      99
-                    </span>
+                    <div>
+                      <h4 className="text-gray-900 font-bold text-lg leading-tight">
+                        {testimonial.name}
+                      </h4>
+                      <p className="text-sm text-gray-500">{testimonial.role || "Student"}</p>
+                    </div>
                   </div>
-                  <p className="text-gray-700 text-base leading-relaxed mb-4 mt-10">
-                    {testimonial.text}
+                  
+                  <p className="text-gray-700 text-base italic leading-relaxed mb-4">
+                    "{testimonial.description}"
                   </p>
-                  <div className="flex items-center mb-3">
-                    {[...Array(testimonial.rating)].map((_, i) => (
+                  
+                  <div className="flex items-center">
+                    {[...Array(5)].map((_, i) => (
                       <Star key={i} className="text-yellow-400 w-4 h-4 fill-yellow-400" />
                     ))}
                   </div>
-                  <h4 className="text-gray-900 font-bold text-lg leading-tight">
-                    {testimonial.name}
-                  </h4>
-                  <p className="text-sm text-gray-500">{testimonial.role}</p>
 
-                  <div className="absolute right-0 top-0 w-28 h-28">
-                    <svg
-                      width="100%"
-                      height="100%"
-                      viewBox="0 0 100 100"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="opacity-10"
-                    >
-                      <defs>
-                        <pattern
-                          id="dots"
-                          x="0"
-                          y="0"
-                          width="10"
-                          height="10"
-                          patternUnits="userSpaceOnUse"
-                        >
-                          <circle cx="1" cy="1" r="1" fill="#0f766e" />
-                        </pattern>
-                      </defs>
-                      <rect width="100" height="100" fill="url(#dots)" />
+                  <div className="absolute right-4 top-4 text-teal-100">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M14.017 21L14.017 18C14.017 16.8954 14.9124 16 16.017 16H19.017C19.5693 16 20.017 15.5523 20.017 15V9C20.017 8.44772 19.5693 8 19.017 8H15.017C14.4647 8 14.017 8.44772 14.017 9V12C14.017 12.5523 13.5693 13 13.017 13H12.017V21H14.017ZM5.017 21L5.017 18C5.017 16.8954 5.91243 16 7.017 16H10.017C10.5693 16 11.017 15.5523 11.017 15V9C11.017 8.44772 10.5693 8 10.017 8H6.017C5.46472 8 5.017 8.44772 5.017 9V12C5.017 12.5523 4.56928 13 4.017 13H3.017V21H5.017Z" />
                     </svg>
                   </div>
                 </div>

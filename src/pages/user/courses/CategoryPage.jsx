@@ -140,51 +140,95 @@
 // export default CategoryPage;
 
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { courseCategories } from '../../../data/courses';
+import BASE_URL from "../../../config/apiConfig";
+
+const CATEGORY_MAP = {
+  "1": "NEET COURSES",
+  "2": "JEE COURSES",
+  "3": "FOUNDATION COURSES"
+};
 
 function CategoryPage() {
   const { categoryId } = useParams();
   const navigate = useNavigate();
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const selectedCategory = courseCategories.find(
-    (category) => category.id === parseInt(categoryId)
-  );
+  useEffect(() => {
+    const fetchCourses = async () => {
+      setLoading(true);
+      try {
+        const categoryName = CATEGORY_MAP[categoryId];
+        const response = await fetch(`${BASE_URL}/course?category=${categoryName}`);
+        if (response.ok) {
+          const data = await response.json();
+          setCourses(data);
+        }
+      } catch (error) {
+        console.error("Error fetching category courses:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCourses();
+  }, [categoryId]);
 
-  const handleCourseClick = (course) => {
-    navigate(`/course/${course.id}/${categoryId}`);
+  const handleCourseClick = (courseId) => {
+    navigate(`/course/${courseId}/${categoryId}`);
   };
 
   return (
     <div className="bg-gray-100 min-h-screen py-12">
-  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <h2 className="text-3xl sm:text-4xl font-extrabold text-center text-gray-800 mb-12">
-      Explore Our {selectedCategory?.type} Courses
-    </h2>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 className="text-3xl sm:text-4xl font-extrabold text-center text-gray-800 mb-12 uppercase">
+          Explore Our {CATEGORY_MAP[categoryId]}
+        </h2>
 
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-      {selectedCategory?.courses.map((course) => (
-        <div
-          key={course.id}
-          onClick={() => handleCourseClick(course)}
-          className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 p-6 cursor-pointer flex flex-col justify-between"
-        >
-          <div>
-            <h3 className="text-xl font-semibold text-gray-800 mb-3">{course.name}</h3>
-            <p className="text-gray-600 text-sm leading-relaxed">{course.description}</p>
+        {loading ? (
+          <div className="text-center py-20">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-teal-500 border-t-transparent"></div>
+            <p className="mt-4 text-gray-500">Loading courses...</p>
           </div>
-          <div className="mt-6">
-            <button className="w-full border border-indigo-600 text-indigo-600 hover:bg-indigo-600 hover:text-white font-medium py-2 rounded-full transition duration-300">
-              Read More
-            </button>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {courses.length === 0 && (
+              <div className="col-span-full text-center py-20 text-gray-400 font-medium">
+                No courses found in this category.
+              </div>
+            )}
+            {courses.map((course) => (
+              <div
+                key={course._id}
+                onClick={() => handleCourseClick(course._id)}
+                className="bg-white rounded-xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 p-0 overflow-hidden cursor-pointer flex flex-col"
+              >
+                <div className="h-48 overflow-hidden">
+                  <img 
+                    src={course.image} 
+                    alt={course.name} 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="p-6 flex-grow flex flex-col">
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-800 mb-3">{course.name}</h3>
+                    <p className="text-gray-600 text-sm leading-relaxed line-clamp-3">{course.description}</p>
+                  </div>
+                  <div className="mt-6 pt-4 border-t flex items-center justify-between">
+                    <span className="text-teal-600 font-bold">{course.duration}</span>
+                    <button className="text-indigo-600 font-semibold text-sm hover:underline">
+                      Read More →
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
-        </div>
-      ))}
+        )}
+      </div>
     </div>
-  </div>
-</div>
-
   );
 }
 

@@ -48,7 +48,7 @@ function Navbar() {
                 Courses
               </div>
               {isCoursesOpen && (
-               <div className="absolute left-0 top-full mt-0 w-48 bg-white shadow-md rounded-md z-50">
+                <div className="absolute left-0 top-full mt-0 w-48 bg-white shadow-md rounded-md z-50">
                   {courseCategories.map((category) => (
                     <Link
                       key={category.id}
@@ -145,7 +145,7 @@ function Navbar() {
                     to="/neet-answer-key"
                     className="block px-4 py-2 text-black hover:bg-[#F1EFFF]"
                   >
-                  NEET Answer Key
+                    NEET Answer Key
                   </Link>
                 </div>
               )}
@@ -187,3 +187,5 @@ function Navbar() {
 }
 
 export default Navbar;
+
+

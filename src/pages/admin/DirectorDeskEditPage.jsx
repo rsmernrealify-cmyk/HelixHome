@@ -1,19 +1,36 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import BASE_URL from "../../config/apiConfig";
 
 function DirectorDeskEditForm() {
   const [formData, setFormData] = useState({
-    title: "A Message from Our Director",
-    content: [
-      "This gives me immense happiness to announce that with wholehearted co-operation of teaching and administrative staff, we have successfully entered the Twelveth year under the banner of Helix Institute.",
-      "Success in Medical Entrance Examinations, in face of a stiff and cut-throat competition, calls for a planned approach and cultivation of requisite skills. Developing such skills and attitude not only requires dedication and hard work on the part of students, but also proper guidance and training from mentor.",
-      "Addressing the above needs of students, we at preface, have crafted the exclusive study material, expose them to highly competitive environment, make them conceptually very strong, clear their doubts in totality and make them comfortable while attempting both competitive as well as Board examinations.",
-      "Helix is a place where teaching staff, administrative staff and parents work together to achieve prosperous and secure future in academics for every student. Our students, the learners of today, will be prepared well to face the highly competitive entrance examinations.",
-      "I am continuously making efforts to impart best education to students and in years to come, probably I will be able to raise standards of this institute up to the level that parents find it easy to choose this institute as best option for their ward's education among hub of institutes in this region.",
-      "We are proud of the success that our students have achieved in the past. Finally I sum up by saying that our main objective is to model this establishment as a center of excellence for the students wishing to choose their career path in Medical fields."
-    ],
-    signature: "M.L Syal \n Director, HELIX Institute",
-    image: "" // Initially no image
+    title: "",
+    content: ["", "", "", "", "", ""],
+    signature: "",
+    image: ""
   });
+  const [imageFile, setImageFile] = useState(null);
+
+  useEffect(() => {
+    const fetchDirectorDesk = async () => {
+      try {
+        const response = await fetch(`${BASE_URL}/director-desk`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data && data.title) {
+            setFormData({
+              title: data.title,
+              content: data.content || ["", "", "", "", "", ""],
+              signature: data.signature,
+              image: data.image
+            });
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching Director's Desk:", error);
+      }
+    };
+    fetchDirectorDesk();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -26,6 +43,7 @@ function DirectorDeskEditForm() {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      setImageFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setFormData((prevData) => ({
@@ -37,10 +55,32 @@ function DirectorDeskEditForm() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Updated Director's Desk Data:", formData);
-    alert("Director's Desk updated successfully!");
+    
+    const data = new FormData();
+    data.append("title", formData.title);
+    data.append("content", JSON.stringify(formData.content));
+    data.append("signature", formData.signature);
+    if (imageFile) {
+      data.append("image", imageFile);
+    }
+
+    try {
+      const response = await fetch(`${BASE_URL}/director-desk`, {
+        method: "POST",
+        body: data,
+      });
+
+      if (response.ok) {
+        alert("Director's Desk updated successfully!");
+      } else {
+        alert("Failed to update Director's Desk.");
+      }
+    } catch (error) {
+      console.error("Error updating Director's Desk:", error);
+      alert("Error updating Director's Desk.");
+    }
   };
 
   return (
@@ -60,6 +100,7 @@ function DirectorDeskEditForm() {
                 value={formData.title}
                 onChange={handleChange}
                 className="w-full p-2 border rounded"
+                placeholder="Enter title (e.g. A Message from Our Director)"
               />
             </div>
 
@@ -78,8 +119,16 @@ function DirectorDeskEditForm() {
                   }}
                   className="w-full p-2 border rounded mb-4"
                   rows="4"
+                  placeholder={`Paragraph ${index + 1}`}
                 />
               ))}
+              <button 
+                type="button" 
+                onClick={() => setFormData({...formData, content: [...formData.content, ""]})}
+                className="mt-2 text-teal-600 font-medium hover:underline"
+              >
+                + Add Paragraph
+              </button>
             </div>
 
             {/* Signature */}
@@ -91,6 +140,7 @@ function DirectorDeskEditForm() {
                 value={formData.signature}
                 onChange={handleChange}
                 className="w-full p-2 border rounded"
+                placeholder="Name and Designation"
               />
             </div>
 
@@ -116,7 +166,7 @@ function DirectorDeskEditForm() {
 
             <button
               type="submit"
-              className="w-full bg-teal-500 text-white p-3 rounded hover:bg-teal-600"
+              className="w-full bg-teal-500 text-white p-3 rounded hover:bg-teal-600 transition"
             >
               Update Director's Desk
             </button>
